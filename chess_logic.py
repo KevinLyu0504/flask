@@ -6,7 +6,7 @@ def get_best_move(fen):
     board = chess.Board(fen)
 
     if not board.is_checkmate() and not board.is_stalemate():
-        print("AI is thinking...")
+        print("Kelvin is thinking...")
         result = engine.play(board, chess.engine.Limit(time=2.0))
         best_move = result.move
         print(f"The best move calculated by the engine is: {best_move}")

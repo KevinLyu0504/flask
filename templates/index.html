@@ -38,7 +38,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify({move: move.san, fen: game.fen()}),
                 success: function(data) {
-                    console.log("AI is thinking...");
+                    console.log("Kelvin is thinking...");
                     if (!game.game_over()) {
                         var bestMove = data.move;
                         console.log(bestMove);
