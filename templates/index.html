@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="static/chessboard.min.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div id="board" style="width: 400px"></div>
+    <button id="newGameButton">New Game</button>
+    <div id="game-status"></div>
+    <div id="move-history" style="height:200px; width: 400px"></div>
+
+    <script src="static/chess.min.js"></script>
+    <script src="static/jquery.min.js"></script>
+    <script src="static/chessboard.min.js"></script>
+    <script>
+        var board = ChessBoard('board', 'start');
+        var game = new Chess();
+
+        function onDrop(source, target) {
+            // 用户的走棋
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+
+            // 如果走棋无效，则撤销
+            if (move === null) return 'snapback';
+
+            updateStatusAndHistory(); // 更新棋局状态
+
+            // 向后端发送请求，获取AI的走棋
+            $.ajax({
+                url: '/move',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({move: move.san, fen: game.fen()}),
+                success: function(data) {
+                    console.log("AI is thinking...");
+                    if (!game.game_over()) {
+                        var bestMove = data.move;
+                        console.log(bestMove);
+                        if (bestMove) { // 如果AI有可走的棋步
+                            var source = bestMove.substring(0,2);
+                            var target = bestMove.substring(2,4);
+                            game.move({from: source, to: target});
+                            board.position(game.fen());
+                            console.log("AI moved");
+                            updateStatusAndHistory(); // 更新棋局状态
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStatusAndHistory() {
+            var status = 'Unknown';
+            var historyElement = $('#move-history');
+
+            if (game.in_checkmate()) {
+                status = 'Game over, checkmate.';
+            } else if (game.in_draw()) {
+                status = 'Game over, drawn position.';
+            } else {
+                status = game.turn() == 'w' ? 'White to move' : 'Black to move';
+
+                // check or checkmate?
+                if (game.in_check()) {
+                    status += ', in check';
+                }
+            }
+
+            $('#game-status').html(status);
+            var history = game.history({verbose: true});
+            var historyString = '';
+            for (var i = 0; i < history.length; ++i) {
+                historyString += (i + 1) + '. ' + history[i].from + ' to ' + history[i].to + ' (' + history[i].san + ')<br>';
+            }
+            historyElement.html(historyString);
+            historyElement.scrollTop(historyElement.prop("scrollHeight")); // 自动滚动到底部
+        }
+
+        function onSnapEnd () {
+          board.position(game.fen())
+          updateStatusAndHistory()
+        }
+        var cfg = {
+            draggable: true,
+            position: 'start',
+            onDrop: onDrop
+        };
+
+        board = ChessBoard('board', cfg);
+
+        $('#newGameButton').on('click', function() {
+            game.reset();
+            board.start();
+            $('#move-history').html(''); // 清空走子序列
+            updateStatusAndHistory(); // 更新棋局状态
+        });
+    </script>
+</body>
+</html>

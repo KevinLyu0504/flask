@@ -1,0 +1,7 @@
+#move-history {
+    width: 300px; /* 设置宽度 */
+    height: 500px; /* 设置高度 */
+    background-color: red; /* 设置背景颜色 */
+    overflow-y: scroll; /* 添加垂直滚动条 */
+    padding: 10px; /* 添加内边距 */
+}
