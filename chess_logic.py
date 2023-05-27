@@ -40,9 +40,9 @@ def get_analysis(fen):
     pv_string = ''
     for i in range(len(pv)):
         if i % 2 == 0:
-            pv_string += f'Black: {pv[i]}\n'
+            pv_string += f'Black: {pv[i]}       '
         else:
-            pv_string += f'White: {pv[i]}\n'  # 新的一行开始于白方的走子
+            pv_string += f'White: {pv[i]}<br>'  # 新的一行开始于白方的走子
 
     engine.quit()
 

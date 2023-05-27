@@ -62,7 +62,8 @@
 
                             document.getElementById('score').textContent = "Score: " + data.analysis.score;
                             document.getElementById('mate').textContent = "Mate: " + data.analysis.mate;
-                            document.getElementById('pv').textContent = "PV: " + data.analysis.pv;
+                            var pv = data.analysis.pv.replace(/<br><br>/g, '<br>');
+                            document.getElementById('pv').innerHTML = "PV: <br>" + pv;
                         }
                     }
                 }
