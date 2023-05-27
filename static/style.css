@@ -16,7 +16,7 @@
 }
 
 #mate{
-    margin-top: 200px; /* 设置上方外边距为200px */
+    /*margin-top: 200px; /* 设置上方外边距为200px */
 }
 
 #pv {
@@ -26,4 +26,11 @@
     height: 200px; /* 设置PV元素的高度 */
     overflow-y: scroll; /* 允许PV元素在y轴（垂直）方向上滚动 */
     background-color: gray;
+}
+#scoreChart {
+    width: 500px;
+    height: 400px;
+    position: relative;
+    left: 530px;
+    top: -40px;
 }

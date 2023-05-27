@@ -4,6 +4,7 @@
     <title>Chess Game</title>
     <link rel="stylesheet" href="static/chessboard.min.css" />
     <link rel="stylesheet" href="/static/style.css" />
+    <script src="static/chart.js"></script>
 </head>
 <body>
     <div id="container" style="display: flex; justify-content: space-between;">
@@ -16,6 +17,9 @@
 
         <div id="analysis">
             <p id="score">Score: </p>
+               <div class="chart-container">
+                 <canvas id="scoreChart" ></canvas>
+               </div>
             <p id="mate">Mate: </p>
             <p id="pv">PV: </p>
         </div>
@@ -64,6 +68,9 @@
                             document.getElementById('mate').textContent = "Mate: " + data.analysis.mate;
                             var pv = data.analysis.pv.replace(/<br><br>/g, '<br>');
                             document.getElementById('pv').innerHTML = "PV: <br>" + pv;
+
+                            // 更新分数图表
+                            updateScore(move.san, data.analysis.score);
                         }
                     }
                 }
@@ -115,6 +122,39 @@
             $('#move-history').html(''); // 清空走子序列
             updateStatusAndHistory(); // 更新棋局状态
         });
+    </script>
+
+    <script>
+      var ctx = document.getElementById('scoreChart').getContext('2d');
+      var scoreChart = new Chart(ctx, {
+        type: 'line',  // 图表类型
+        data: {
+          labels: [],  // 这将存储棋步
+          datasets: [{
+            label: 'Score',
+            data: [],  // 这将存储评分
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',  // 图表的颜色
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // 当你收到新的评分时，更新图表
+      function updateScore(move, score) {
+        scoreChart.data.labels.push(move);
+        scoreChart.data.datasets[0].data.push(score);
+        scoreChart.update();
+      }
     </script>
 </body>
 </html>
