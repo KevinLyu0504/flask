@@ -37,6 +37,13 @@ def get_analysis(fen):
     # Convert each move in principal variation to UCI string
     pv = [move.uci() for move in info['pv']]
 
+    pv_string = ''
+    for i in range(len(pv)):
+        if i % 2 == 0:
+            pv_string += f'Black: {pv[i]}\n'
+        else:
+            pv_string += f'White: {pv[i]}\n'  # 新的一行开始于白方的走子
+
     engine.quit()
 
     # Return a dictionary containing the score, mate in move, depth, and principal variation.
@@ -44,5 +51,5 @@ def get_analysis(fen):
         'score': score,
         'mate': mate,
         'depth': info['depth'],
-        'pv': pv,
+        'pv': pv_string,
     }

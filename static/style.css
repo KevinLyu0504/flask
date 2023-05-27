@@ -5,3 +5,25 @@
     overflow-y: scroll; /* 添加垂直滚动条 */
     padding: 10px; /* 添加内边距 */
 }
+#analysis {
+    width: 80%; /* 控制元素的宽度，你可以根据需要调整 */
+    margin: auto; /* 垂直方向上的外边距为0，水平方向上的外边距自动分配 */
+    padding: 0 60px; /* 设置内边距，上下为0，左右为20px */
+}
+
+.analysis-line {
+    margin-bottom: 400px; /* 在每行分析数据下面增加200px的空白 */
+}
+
+#mate{
+    margin-top: 200px; /* 设置上方外边距为200px */
+}
+
+#pv {
+    margin-top: 200px; /* 设置上方外边距为200px */
+    width: 400px; /* 设置宽度 */
+    height: 500px;
+    height: 200px; /* 设置PV元素的高度 */
+    overflow-y: scroll; /* 允许PV元素在y轴（垂直）方向上滚动 */
+    background-color: gray;
+}
