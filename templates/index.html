@@ -6,10 +6,20 @@
     <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <div id="board" style="width: 400px"></div>
-    <button id="newGameButton">New Game</button>
-    <div id="game-status"></div>
-    <div id="move-history" style="height:200px; width: 400px"></div>
+    <div id="container" style="display: flex; justify-content: space-between;">
+        <div>
+            <div id="board" style="width: 600px"></div>
+            <button id="newGameButton">New Game</button>
+            <div id="game-status"></div>
+            <div id="move-history" style="height:200px; width: 580px"></div>
+        </div>
+
+        <div id="analysis">
+            <p id="score">Score: </p>
+            <p id="mate">Mate: </p>
+            <p id="pv">PV: </p>
+        </div>
+    </div>
 
     <script src="static/chess.min.js"></script>
     <script src="static/jquery.min.js"></script>
@@ -49,6 +59,10 @@
                             board.position(game.fen());
                             console.log("AI moved");
                             updateStatusAndHistory(); // 更新棋局状态
+
+                            document.getElementById('score').textContent = "Score: " + data.analysis.score;
+                            document.getElementById('mate').textContent = "Mate: " + data.analysis.mate;
+                            document.getElementById('pv').textContent = "PV: " + data.analysis.pv;
                         }
                     }
                 }

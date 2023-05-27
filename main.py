@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from chess import Board
-from chess_logic import get_best_move
+from chess_logic import get_best_move, get_analysis
 
 app = Flask(__name__)
 board = Board()
@@ -18,8 +18,12 @@ def move():
 
     best_move, new_fen = get_best_move(fen)
 
-    # 将最佳移动和新棋局fen返回给前端
-    return jsonify({'move': best_move, 'fen': new_fen})
+    # 获取棋盘分析
+    analysis = get_analysis(new_fen)
+
+    # 将最佳移动、新棋局fen和棋盘分析返回给前端
+    return jsonify({'move': best_move, 'fen': new_fen, 'analysis': analysis})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
