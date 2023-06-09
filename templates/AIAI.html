@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI vs AI Chess Game</title>
+    <link rel="stylesheet" href="static/chessboard.min.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="static/chess.min.js"></script>
+    <script src="static/jquery.min.js"></script>
+    <script src="static/chessboard.min.js"></script>
+</head>
+<body>
+    <div id="board" style="width: 400px"></div>
+    <button id="startButton">Start AI vs AI game</button>
+    <div id="game-status"></div>
+    <div id="move-history" style="height:200px; width: 580px"></div>
+    <script>
+        var game = new Chess();
+        var board = ChessBoard('board', 'start');
+
+        function onDrop(source, target) {
+          var move = game.move({
+              from: source,
+              to: target,
+              promotion: 'q'
+          });
+
+          if (move === null) return 'snapback';
+          updateStatusAndHistory();
+
+          // 让AI进行下一步
+          makeBestMove();
+        }
+
+        function makeBestMove() {
+          if (!game.game_over()) {
+            $.ajax({
+              url: '/ai_move',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({fen: game.fen()}),
+              success: function(data) {
+                var bestMove = data.move;
+                if (bestMove) {
+                  var source = bestMove.substring(0,2);
+                  var target = bestMove.substring(2,4);
+                  game.move({from: source, to: target});
+                  board.position(game.fen());
+                  updateStatusAndHistory();
+                  //document.getElementById('score').textContent = "Score: " + data.analysis.score;
+                  //document.getElementById('mate').textContent = "Mate: " + data.analysis.mate;
+                  //var pv = data.analysis.pv.replace(/<br><br>/g, '<br>');
+                  //document.getElementById('pv').innerHTML = "PV: <br>" + pv;
+                  //updateScore(move.san, data.analysis.score);
+                }
+
+                // 在AI完成走棋后，再次调用这个函数，让AI进行下一步
+                makeBestMove();
+              }
+            });
+          }
+        }
+
+         function updateStatusAndHistory() {
+            var status = 'Unknown';
+            var historyElement = $('#move-history');
+
+            if (game.in_checkmate()) {
+                status = 'Game over, checkmate.';
+            } else if (game.in_draw()) {
+                status = 'Game over, drawn position.';
+            } else {
+                status = game.turn() == 'w' ? 'White to move' : 'Black to move';
+
+                // check or checkmate?
+                if (game.in_check()) {
+                    status += ', in check';
+                }
+            }
+
+            $('#game-status').html(status);
+            var history = game.history({verbose: true});
+            var historyString = '';
+            for (var i = 0; i < history.length; ++i) {
+                historyString += (i + 1) + '. ' + history[i].from + ' to ' + history[i].to + ' (' + history[i].san + ')<br>';
+            }
+            historyElement.html(historyString);
+            historyElement.scrollTop(historyElement.prop("scrollHeight")); // 自动滚动到底部
+        }
+
+        function onSnapEnd () {
+          board.position(game.fen())
+          updateStatusAndHistory()
+        }
+        var cfg = {
+            draggable: true,
+            position: 'start',
+            onDrop: onDrop
+        };
+
+        board = ChessBoard('board', cfg);
+
+        $('#startButton').on('click', function() {
+            game.reset();
+            board.start();
+            $('#move-history').html('');
+            updateStatusAndHistory();
+
+            // 让AI进行第一步
+            makeBestMove();
+        });
+    </script>
+</body>
+</html>
